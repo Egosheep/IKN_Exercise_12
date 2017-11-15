@@ -73,14 +73,14 @@ namespace Linklaget
 		{
 		    var bufferlist = new List<byte> { Capacity = 2008 };
 		    bufferlist.Add(DELIMITER);
-		    for (int i = 1; i < buf.Length; ++i)
+		    for (int i = 0; i < buf.Length; ++i)
 		    {
 		        if (buf[i] == DELIMITER)
 		        {
 		            bufferlist.Add(BBYTE);
 		            bufferlist.Add(CBYTE);
 		        }
-		        else if (bufferlist[i] == BBYTE)
+		        else if (buf[i] == BBYTE)
 		        {
 		            bufferlist.Add(BBYTE);
 		            bufferlist.Add(DBYTE);
@@ -108,8 +108,32 @@ namespace Linklaget
 		/// </param>
 		public int receive (ref byte[] buf)
 		{
-	    	// TO DO Your own code
-			return 0;
+		    serialPort.Read(buffer, 0, 2008);
+	    	var bufferlist = new List<byte>();
+		    for (int i = 0; i < buffer.Length; i++)
+		    {
+		        if (buffer[i] == DELIMITER)
+		        {
+		            
+		        }
+		        else if (buffer[i] == BBYTE)
+		        {
+		            if (buffer[++i] == CBYTE)
+		            {
+		                bufferlist.Add(DELIMITER);
+		            }
+                    else if (buffer[++i] == DBYTE)
+		            {
+		                bufferlist.Add(BBYTE);
+		            }
+		        }
+		        else
+		        {
+		            bufferlist.Add(buffer[i]);
+		        }
+		    }
+		    buf = bufferlist.ToArray();
+			return bufferlist.Count;
 		}
 	}
 }
