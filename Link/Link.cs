@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO.Ports;
 using System.Linq;
 
@@ -25,10 +26,14 @@ namespace Linklaget
 		/// </summary>
 		SerialPort serialPort;
 
-		/// <summary>
-		/// Initializes a new instance of the <see cref="link"/> class.
-		/// </summary>
-		public Link (int BUFSIZE, string APP)
+	    private const byte BBYTE = (byte) 'B';
+	    private const byte CBYTE = (byte)'C';
+	    private const byte DBYTE = (byte)'D';
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="link"/> class.
+        /// </summary>
+        public Link (int BUFSIZE, string APP)
 		{
 			// Create a new SerialPort object with default settings.
 			#if DEBUG
@@ -66,8 +71,31 @@ namespace Linklaget
 		/// </param>
 		public void send (byte[] buf, int size)
 		{
-            // TO DO Your own code
-		}
+		    var bufferlist = new List<byte> { Capacity = 2008 };
+		    bufferlist.Add(DELIMITER);
+		    for (int i = 1; i < buf.Length; ++i)
+		    {
+		        if (buf[i] == DELIMITER)
+		        {
+		            bufferlist.Add(BBYTE);
+		            bufferlist.Add(CBYTE);
+		        }
+		        else if (bufferlist[i] == BBYTE)
+		        {
+		            bufferlist.Add(BBYTE);
+		            bufferlist.Add(DBYTE);
+		        }
+		        else
+		        {
+		            bufferlist.Add(buf[i]);
+		        }
+		    }
+		    bufferlist.Add(DELIMITER);
+		    buffer = bufferlist.ToArray();
+		    //serialPort.Write(buffer, 0, buffer.Length);
+		    Console.WriteLine(buffer);
+		    buffer.ToList().Clear();
+        }
 
 		/// <summary>
 		/// Receive the specified buf and size.
