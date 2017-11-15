@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Transportlaget;
@@ -45,15 +46,17 @@ namespace Application
 			// TO DO Your own code
 		}
 
-		/// <summary>
-		/// The entry point of the program, where the program control starts and ends.
-		/// </summary>
-		/// <param name='args'>
-		/// First argument: Filname
-		/// </param>
-		public static void Main (string[] args)
+        /// <summary>
+        /// The entry point of the program, where the program control starts and ends.
+        /// </summary>
+        /// <param name='args'>
+        /// First argument: Filname
+        /// </param>
+        public static void Main (string[] args)
 		{
 			new file_client(args);
+		    
+            
 		}
 	}
 }
