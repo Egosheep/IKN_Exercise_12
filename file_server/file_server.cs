@@ -22,7 +22,11 @@ namespace Application
             Transport t = new Transport(BUFSIZE, APP);
             t.send(new byte[] { (byte)'A',(byte)'X',(byte)'B',(byte)'Y'},4);
 
-            
+		   
+		    t.send(new byte[] { (byte)'A', (byte)'X', (byte)'B', (byte)'Y' }, 4);
+
+
+		    
             // TO DO Your own code
         }
 

@@ -43,8 +43,18 @@ namespace Application
 		/// </param>
 		private void receiveFile (String fileName, Transport transport)
 		{
-			// TO DO Your own code
-		}
+            Transport t = new Transport(BUFSIZE, APP);
+		    byte[] bytes = new byte[BUFSIZE];
+
+		    t.receive(ref bytes);
+
+		    foreach (byte b in bytes)
+		    {
+		        Console.WriteLine((char)b);
+		    }
+
+            // TO DO Your own code
+        }
 
         /// <summary>
         /// The entry point of the program, where the program control starts and ends.

@@ -92,7 +92,9 @@ namespace Linklaget
 		        }
 		    }
 		    bufferlist.Add(DELIMITER);
+
 		    buffer = bufferlist.ToArray();
+        
             serialPort.Write(buffer, 0, buffer.Length);
 		    buffer.ToList().Clear();
         }
