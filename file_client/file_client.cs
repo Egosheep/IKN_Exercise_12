@@ -35,10 +35,10 @@ namespace Application
 	        byte[] bytes = new byte[BUFSIZE];
 
 	        t.receive(ref bytes);
-
+            Console.WriteLine($"Received {bytes}");
 	        foreach (byte b in bytes)
 	        {
-	            Console.WriteLine((char)b);
+	            Console.Write((char)b);
 	        }
         }
 
