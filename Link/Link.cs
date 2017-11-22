@@ -110,8 +110,22 @@ namespace Linklaget
 		/// </param>
 		public int receive (ref byte[] buf)
 		{
-            serialPort.Read(buffer, 0, 2008);
-	    	var bufferlist = new List<byte>();
+		    var bufferlist = new List<byte>();
+		    byte readByte;
+		    do
+		    {
+		        readByte = (byte)serialPort.ReadByte();
+		    } while (readByte != DELIMITER);
+
+		    readByte = (byte)serialPort.ReadByte();
+		    int bufCounter = 0;
+		    do
+		    {
+		        buffer[bufCounter] = readByte;
+		        readByte = (byte)serialPort.ReadByte();
+		        bufCounter++;
+		    } while (readByte != DELIMITER);
+
 		    for (int i = 0; i < buffer.Length; i++)
 		    {
 		        if (buffer[i] == DELIMITER)
