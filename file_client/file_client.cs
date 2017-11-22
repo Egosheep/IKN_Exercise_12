@@ -29,8 +29,18 @@ namespace Application
 		/// </param>
 	    private file_client(String[] args)
 	    {
-	    	// TO DO Your own code
-	    }
+            // TO DO Your own code
+
+	        Transport t = new Transport(BUFSIZE, APP);
+	        byte[] bytes = new byte[BUFSIZE];
+
+	        t.receive(ref bytes);
+            Console.WriteLine($"Received {bytes}");
+	        foreach (byte b in bytes)
+	        {
+	            Console.Write((char)b);
+	        }
+        }
 
 		/// <summary>
 		/// Receives the file.
@@ -43,8 +53,8 @@ namespace Application
 		/// </param>
 		private void receiveFile (String fileName, Transport transport)
 		{
-			// TO DO Your own code
-		}
+            // TO DO Your own code
+        }
 
         /// <summary>
         /// The entry point of the program, where the program control starts and ends.

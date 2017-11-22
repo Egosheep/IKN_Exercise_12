@@ -16,7 +16,7 @@ namespace Linklaget
 		/// <summary>
 		/// The DELIMITE for slip protocol.
 		/// </summary>
-		const byte DELIMITER = (byte)'A';
+		const byte DELIMITER = ABYTE;
 		/// <summary>
 		/// The buffer for link.
 		/// </summary>
@@ -26,7 +26,8 @@ namespace Linklaget
 		/// </summary>
 		SerialPort serialPort;
 
-	    private const byte BBYTE = (byte) 'B';
+	    private const byte ABYTE = (byte) 'A';
+	    private const byte BBYTE = (byte)'B';
 	    private const byte CBYTE = (byte)'C';
 	    private const byte DBYTE = (byte)'D';
 
@@ -91,9 +92,10 @@ namespace Linklaget
 		        }
 		    }
 		    bufferlist.Add(DELIMITER);
+
 		    buffer = bufferlist.ToArray();
-		    //serialPort.Write(buffer, 0, buffer.Length);
-		    Console.WriteLine(buffer);
+        
+            serialPort.Write(buffer, 0, buffer.Length);
 		    buffer.ToList().Clear();
         }
 
@@ -108,22 +110,8 @@ namespace Linklaget
 		/// </param>
 		public int receive (ref byte[] buf)
 		{
-		    var bufferlist = new List<byte>();
-            byte readByte;
-		    do
-		    {
-		        readByte = (byte)serialPort.ReadByte();
-		    } while (readByte != DELIMITER);
-
-            readByte = (byte)serialPort.ReadByte();
-		    int bufCounter = 0;
-            do
-            {
-                buffer[bufCounter] = readByte;
-		        readByte = (byte)serialPort.ReadByte();
-                bufCounter++;
-            } while (readByte != DELIMITER);
-
+            serialPort.Read(buffer, 0, 2008);
+	    	var bufferlist = new List<byte>();
 		    for (int i = 0; i < buffer.Length; i++)
 		    {
 		        if (buffer[i] == DELIMITER)
@@ -132,13 +120,15 @@ namespace Linklaget
 		        }
 		        else if (buffer[i] == BBYTE)
 		        {
-		            if (buffer[++i] == CBYTE)
+		            if (buffer[i+1] == CBYTE)
 		            {
-		                bufferlist.Add(DELIMITER);
+		                bufferlist.Add(ABYTE);
+		                i++;
 		            }
-                    else if (buffer[++i] == DBYTE)
+                    else if (buffer[i+1] == DBYTE)
 		            {
 		                bufferlist.Add(BBYTE);
+		                i++;
 		            }
 		        }
 		        else
@@ -147,7 +137,8 @@ namespace Linklaget
 		        }
 		    }
 		    buf = bufferlist.ToArray();
-			return bufferlist.Count;
-		}
+		    bufferlist.Clear();
+            return bufferlist.Count;
+        }
 	}
 }
