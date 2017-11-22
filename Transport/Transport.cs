@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using Linklaget;
 
 /// <summary>
@@ -114,8 +116,23 @@ namespace Transportlaget
 		/// </param>
 		public void send(byte[] buf, int size)
 		{
-			// TO DO Your own code
-		    link.send(buf, size); //dummy code
+		    var sequence = 0;
+		    var sendBuf = new byte[1004];
+		    var bufList = buf.ToList();
+		    var listOfBufList = splitList(bufList);
+		    foreach (List<byte> bytes in listOfBufList)
+		    {
+		        sendBuf[0] = (byte)sequence;
+		        sendBuf[1] = (byte)TransType.DATA;
+		        Array.Copy(bytes.ToArray(), sendBuf, 2);
+		        checksum.calcChecksum(ref sendBuf, sendBuf.Length);
+		        do
+		        {
+		            link.send(sendBuf, sendBuf.Length);
+                } while (!receiveAck());
+		        Array.Clear(sendBuf, 0, sendBuf.Length);
+		        sequence++;
+		    }
 		}
 
 		/// <summary>
@@ -126,8 +143,17 @@ namespace Transportlaget
 		/// </param>
 		public int receive (ref byte[] buf)
 		{
-			// TO DO Your own code
-		    return link.receive(ref buf); //dummy code
+		    return 0;
 		}
+
+	    private static List<List<byte>> splitList(List<byte> byteList, int nSize = 1000)
+	    {
+            var list = new List<List<byte>>();
+	        for (int i = 0; i < byteList.Count; i+=nSize)
+	        {
+	            list.Add(byteList.GetRange(i, Math.Min(nSize, byteList.Count - i)));
+	        }
+	        return list;
+	    }
 	}
 }
