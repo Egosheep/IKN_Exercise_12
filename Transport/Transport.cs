@@ -117,20 +117,14 @@ namespace Transportlaget
 		public void send(byte[] buf, int size)
 		{
 		    var sendBuf = new byte[1004];
-		    var bufList = buf.ToList();
-		    var listOfBufList = splitList(bufList);
 		    sendBuf[0] = seqNo;
-            foreach (List<byte> bytes in listOfBufList)
-		    {
-		        sendBuf[1] = (byte)TransType.DATA;
-		        Array.Copy(bytes.ToArray(), sendBuf, 2);
-		        checksum.calcChecksum(ref sendBuf, sendBuf.Length);
-		        do
-		        {
-		            link.send(sendBuf, sendBuf.Length);
-                } while (!receiveAck());
-		        Array.Clear(sendBuf, 0, sendBuf.Length);
-		    }
+            sendBuf[1] = (byte)TransType.DATA;
+            Array.Copy(buf, 0, sendBuf, 2, buf.Length);
+            checksum.calcChecksum(ref sendBuf, sendBuf.Length);
+            do
+            {
+                link.send(sendBuf, sendBuf.Length);
+            } while (!receiveAck());
 		}
 
 		/// <summary>
@@ -141,8 +135,22 @@ namespace Transportlaget
 		/// </param>
 		public int receive (ref byte[] buf)
 		{
-		    return 0;
-		}
+		    var tempBuffer = new byte[1004];
+		    recvSize = link.receive(ref tempBuffer);
+		    while (!checksum.checkChecksum(tempBuffer, tempBuffer.Length))
+		    {
+		        errorCount++;
+		        sendAck(false);
+		        recvSize = link.receive(ref tempBuffer);
+		        if (errorCount < 5)
+		        {
+		            return 0;
+		        }
+		    }
+		    sendAck(true);
+		    Array.Copy(tempBuffer, 4, buf, 0, tempBuffer.Length - 4);
+		    return recvSize;
+        }
 
 	    private static List<List<byte>> splitList(List<byte> byteList, int nSize = 1000)
 	    {

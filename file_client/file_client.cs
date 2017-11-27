@@ -53,7 +53,40 @@ namespace Application
 		/// </param>
 		private void receiveFile (String fileName, Transport transport)
 		{
-            // TO DO Your own code
+            /*
+		    int index = 0;
+		    var tempBuffer = new byte[1004];
+		    recvSize = link.receive(ref tempBuffer);
+		    do
+		    {
+		        while (!checksum.checkChecksum(tempBuffer, tempBuffer.Length))
+		        {
+		            errorCount++;
+		            sendAck(false);
+		            recvSize = link.receive(ref tempBuffer);
+		            if (errorCount < 5)
+		            {
+		                return 0;
+		            }
+		        }
+		        sendAck(true);
+		        Array.Copy(tempBuffer, 4, buf, index, 1000);
+		        recvSize = link.receive(ref tempBuffer);
+		        index += 1000;
+		    } while (recvSize == 1004);
+		    while (!checksum.checkChecksum(tempBuffer, tempBuffer.Length))
+		    {
+		        errorCount++;
+		        sendAck(false);
+		        recvSize = link.receive(ref tempBuffer);
+		        if (errorCount < 5)
+		        {
+		            return 0;
+		        }
+		    }
+		    sendAck(true);
+		    Array.Copy(tempBuffer, 4, buf, index, 1000);
+            */
         }
 
         /// <summary>
