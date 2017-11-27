@@ -116,13 +116,12 @@ namespace Transportlaget
 		/// </param>
 		public void send(byte[] buf, int size)
 		{
-		    var sequence = 0;
 		    var sendBuf = new byte[1004];
 		    var bufList = buf.ToList();
 		    var listOfBufList = splitList(bufList);
-		    foreach (List<byte> bytes in listOfBufList)
+		    sendBuf[0] = seqNo;
+            foreach (List<byte> bytes in listOfBufList)
 		    {
-		        sendBuf[0] = (byte)sequence;
 		        sendBuf[1] = (byte)TransType.DATA;
 		        Array.Copy(bytes.ToArray(), sendBuf, 2);
 		        checksum.calcChecksum(ref sendBuf, sendBuf.Length);
@@ -131,7 +130,6 @@ namespace Transportlaget
 		            link.send(sendBuf, sendBuf.Length);
                 } while (!receiveAck());
 		        Array.Clear(sendBuf, 0, sendBuf.Length);
-		        sequence++;
 		    }
 		}
 
