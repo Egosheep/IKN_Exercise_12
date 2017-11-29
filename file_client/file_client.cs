@@ -29,17 +29,8 @@ namespace Application
 		/// </param>
 	    private file_client(String[] args)
 	    {
-            // TO DO Your own code
-
-	        Transport t = new Transport(BUFSIZE, APP);
-	        byte[] bytes = new byte[BUFSIZE];
-
-	        t.receive(ref bytes);
-            Console.WriteLine($"Received {bytes}");
-	        foreach (byte b in bytes)
-	        {
-	            Console.Write((char)b);
-	        }
+	        Transport transport = new Transport(BUFSIZE, APP);
+	        receiveFile(args[1], transport);
         }
 
 		/// <summary>
@@ -53,41 +44,35 @@ namespace Application
 		/// </param>
 		private void receiveFile (String fileName, Transport transport)
 		{
-            /*
-		    int index = 0;
-		    var tempBuffer = new byte[1004];
-		    recvSize = link.receive(ref tempBuffer);
-		    do
+		    var receiveBuffer = new byte[1000];
+		    var receivedData = new byte[] { };
+            var fileNameArray = Encoding.UTF8.GetBytes(fileName);
+            transport.send(fileNameArray, fileNameArray.Length);
+		    var filePath = AppDomain.CurrentDomain.BaseDirectory + "/" + fileName;
+
+            var existCheck = new byte[]{};
+		    transport.receive(ref existCheck);
+		    if (existCheck[0] != 0)
 		    {
-		        while (!checksum.checkChecksum(tempBuffer, tempBuffer.Length))
+		        var receiveSize = transport.receive(ref receiveBuffer);
+		        int index = 0;
+		        do
 		        {
-		            errorCount++;
-		            sendAck(false);
-		            recvSize = link.receive(ref tempBuffer);
-		            if (errorCount < 5)
-		            {
-		                return 0;
-		            }
-		        }
-		        sendAck(true);
-		        Array.Copy(tempBuffer, 4, buf, index, 1000);
-		        recvSize = link.receive(ref tempBuffer);
-		        index += 1000;
-		    } while (recvSize == 1004);
-		    while (!checksum.checkChecksum(tempBuffer, tempBuffer.Length))
-		    {
-		        errorCount++;
-		        sendAck(false);
-		        recvSize = link.receive(ref tempBuffer);
-		        if (errorCount < 5)
+		            Array.Copy(receiveBuffer, 0, receivedData, index, BUFSIZE);
+		            receiveSize = transport.receive(ref receiveBuffer);
+		            index += 1000;
+		        } while (receiveSize == BUFSIZE);
+		        if (receiveSize > 0)
 		        {
-		            return 0;
+		            Array.Copy(receiveBuffer, 0, receivedData, index, receiveBuffer.Length);
 		        }
+		        if (File.Exists(filePath))
+		        {
+		            File.Delete(filePath);
+		        }
+		        File.WriteAllBytes(filePath, receivedData);
 		    }
-		    sendAck(true);
-		    Array.Copy(tempBuffer, 4, buf, index, 1000);
-            */
-        }
+		}
 
         /// <summary>
         /// The entry point of the program, where the program control starts and ends.
@@ -98,8 +83,6 @@ namespace Application
         public static void Main (string[] args)
 		{
 			new file_client(args);
-		    
-            
 		}
 	}
 }

@@ -151,15 +151,5 @@ namespace Transportlaget
 		    Array.Copy(tempBuffer, 4, buf, 0, tempBuffer.Length - 4);
 		    return recvSize;
         }
-
-	    private static List<List<byte>> splitList(List<byte> byteList, int nSize = 1000)
-	    {
-            var list = new List<List<byte>>();
-	        for (int i = 0; i < byteList.Count; i+=nSize)
-	        {
-	            list.Add(byteList.GetRange(i, Math.Min(nSize, byteList.Count - i)));
-	        }
-	        return list;
-	    }
 	}
 }
