@@ -109,6 +109,7 @@ namespace Linklaget
 		/// </param>
 		public int receive (ref byte[] buf)
 		{
+            var listBuffer = new List<Byte>();
 		    var bufferlist = new List<byte>();
 		    byte readByte;
 		    do
@@ -120,25 +121,25 @@ namespace Linklaget
 		    int bufCounter = 0;
 		    do
 		    {
-		        buffer[bufCounter] = readByte;
+		        listBuffer[bufCounter] = readByte;
 		        readByte = (byte)serialPort.ReadByte();
 		        bufCounter++;
 		    } while (readByte != DELIMITER);
 
 		    for (int i = 0; i < buffer.Length; i++)
 		    {
-		        if (buffer[i] == DELIMITER)
+		        if (listBuffer[i] == DELIMITER)
 		        {
 		            
 		        }
-		        else if (buffer[i] == BBYTE)
+		        else if (listBuffer[i] == BBYTE)
 		        {
-		            if (buffer[i+1] == CBYTE)
+		            if (listBuffer[i+1] == CBYTE)
 		            {
 		                bufferlist.Add(ABYTE);
 		                i++;
 		            }
-                    else if (buffer[i+1] == DBYTE)
+                    else if (listBuffer[i+1] == DBYTE)
 		            {
 		                bufferlist.Add(BBYTE);
 		                i++;
