@@ -118,15 +118,13 @@ namespace Linklaget
 		    } while (readByte != DELIMITER);
 
 		    readByte = (byte)serialPort.ReadByte();
-		    int bufCounter = 0;
 		    do
 		    {
-		        listBuffer[bufCounter] = readByte;
+		        listBuffer.Add(readByte);
 		        readByte = (byte)serialPort.ReadByte();
-		        bufCounter++;
 		    } while (readByte != DELIMITER);
 
-		    for (int i = 0; i < buffer.Length; i++)
+		    for (int i = 0; i < listBuffer.Count; i++)
 		    {
 		        if (listBuffer[i] == DELIMITER)
 		        {
