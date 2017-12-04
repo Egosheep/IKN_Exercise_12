@@ -53,8 +53,6 @@ namespace Linklaget
             if (!serialPort.IsOpen)
 				serialPort.Open();
 
-            buffer = new byte[]{};
-
 			// Uncomment the next line to use timeout
 			//serialPort.ReadTimeout = 500;
 
@@ -93,8 +91,8 @@ namespace Linklaget
 		        }
 		    }
 		    bufferlist.Add(DELIMITER);
-
-		    Array.Copy(bufferlist.ToArray(), buffer, bufferlist.Count);
+            buffer = new byte[bufferlist.Count];
+		    buffer = bufferlist.ToArray();
         
             serialPort.Write(buffer, 0, buffer.Length);
 		    buffer.ToList().Clear();
