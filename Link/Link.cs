@@ -72,7 +72,7 @@ namespace Linklaget
 		/// </param>
 		public void send (byte[] buf, int size)
 		{
-		    var bufferlist = new List<byte> { Capacity = 2008 };
+		    var bufferlist = new List<byte>();
 		    bufferlist.Add(DELIMITER);
 		    for (int i = 0; i < buf.Length; ++i)
 		    {
@@ -150,7 +150,7 @@ namespace Linklaget
 		            bufferlist.Add(buffer[i]);
 		        }
 		    }
-		    buf = bufferlist.ToArray();
+		    bufferlist.ToArray().CopyTo(buf, 0);
 		    bufferlist.Clear();
             return bufferlist.Count;
         }

@@ -30,7 +30,7 @@ namespace Application
 	    private file_client(String[] args)
 	    {
 	        Transport transport = new Transport(BUFSIZE, APP);
-	        receiveFile(args[1], transport);
+	        receiveFile(args[0], transport);
         }
 
 		/// <summary>
