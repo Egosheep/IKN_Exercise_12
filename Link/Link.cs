@@ -36,8 +36,8 @@ namespace Linklaget
         /// </summary>
         public Link (int BUFSIZE, string APP)
 		{
-			// Create a new SerialPort object with default settings.
-			#if DEBUG
+            // Create a new SerialPort object with default settings.
+            /*#if DEBUG
 				if(APP.Equals("FILE_SERVER"))
 				{
 					serialPort = new SerialPort("/dev/ttySn0",115200,Parity.None,8,StopBits.One);
@@ -47,12 +47,13 @@ namespace Linklaget
 					serialPort = new SerialPort("/dev/ttySn1",115200,Parity.None,8,StopBits.One);
 				}
 			#else
-				serialPort = new SerialPort("/dev/ttyS1",115200,Parity.None,8,StopBits.One);
-			#endif
-			if(!serialPort.IsOpen)
+				
+			#endif*/
+		    serialPort = new SerialPort("/dev/ttyS1", 115200, Parity.None, 8, StopBits.One);
+            if (!serialPort.IsOpen)
 				serialPort.Open();
 
-			buffer = new byte[(BUFSIZE*2)];
+            buffer = new byte[]{};
 
 			// Uncomment the next line to use timeout
 			//serialPort.ReadTimeout = 500;
@@ -93,7 +94,7 @@ namespace Linklaget
 		    }
 		    bufferlist.Add(DELIMITER);
 
-		    buffer = bufferlist.ToArray();
+		    Array.Copy(bufferlist.ToArray(), buffer, bufferlist.Count);
         
             serialPort.Write(buffer, 0, buffer.Length);
 		    buffer.ToList().Clear();
