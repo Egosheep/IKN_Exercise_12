@@ -109,7 +109,7 @@ namespace Linklaget
 		/// </param>
 		public int receive (ref byte[] buf)
 		{
-            var listBuffer = new List<Byte>();
+            var listBuffer = new List<byte>();
 		    var bufferlist = new List<byte>();
 		    byte readByte;
 		    do
