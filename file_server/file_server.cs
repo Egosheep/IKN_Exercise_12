@@ -36,9 +36,9 @@ namespace Application
 		            do
 		            {
                         Array.Resize(ref receivedData, receiveSize);
-                        Array.Copy(receiveBuffer, 0, receivedData, index, BUFSIZE);
+                        Array.Copy(receiveBuffer, 0, receivedData, index, receiveSize);
 		                receiveSize = transport.receive(ref receiveBuffer);
-		                index += 1000;
+		                index += receiveSize;
 		            } while (receiveSize == BUFSIZE);
 		            if (receiveSize > 0)
 		            {

@@ -148,7 +148,7 @@ namespace Transportlaget
 		        }
 		    }
 		    sendAck(true);
-		    Array.Copy(tempBuffer, 4, buf, 0, tempBuffer.Length-4);
+		    Array.Copy(tempBuffer, 2, buf, 0, tempBuffer.Length-4);
 		    return recvSize;
         }
 	}
