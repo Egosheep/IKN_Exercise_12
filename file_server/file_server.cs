@@ -35,12 +35,14 @@ namespace Application
 		            int index = 0;
 		            do
 		            {
-                        Array.Copy(receiveBuffer,0, receivedData, index, BUFSIZE);
+                        Array.Resize(ref receivedData, receiveSize);
+                        Array.Copy(receiveBuffer, 0, receivedData, index, BUFSIZE);
 		                receiveSize = transport.receive(ref receiveBuffer);
 		                index += 1000;
 		            } while (receiveSize == BUFSIZE);
 		            if (receiveSize > 0)
 		            {
+                        Array.Resize(ref receivedData, receivedData.Length+receiveSize);
 		                Array.Copy(receiveBuffer, 0, receivedData, index, receiveBuffer.Length);
                     }
 

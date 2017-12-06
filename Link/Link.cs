@@ -145,7 +145,7 @@ namespace Linklaget
 		        }
 		        else
 		        {
-		            bufferlist.Add(buffer[i]);
+		            bufferlist.Add(listBuffer[i]);
 		        }
 		    }
 		    bufferlist.ToArray().CopyTo(buf, 0);
