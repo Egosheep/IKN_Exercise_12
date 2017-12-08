@@ -149,7 +149,7 @@ namespace Linklaget
 		        }
 		    }
 		    bufferlist.ToArray().CopyTo(buf, 0);
-		    bufferlist.Clear();
+		    
             return bufferlist.Count;
         }
 	}
