@@ -136,7 +136,7 @@ namespace Transportlaget
 		public int receive (ref byte[] buf)
 		{
 		    var tempBuffer = new byte[1004];
-		    recvSize = link.receive(ref tempBuffer);
+		    recvSize = link.receive(ref tempBuffer) - 4;
 		    while (!checksum.checkChecksum(tempBuffer, tempBuffer.Length))
 		    {
 		        errorCount++;
@@ -147,8 +147,10 @@ namespace Transportlaget
 		            return 0;
 		        }
 		    }
+		    //Array.Copy(tempBuffer, 0, buffer, 0, tempBuffer.Length-4);
+		    buffer[(int)TransCHKSUM.SEQNO] = tempBuffer[(int)TransCHKSUM.SEQNO];
 		    sendAck(true);
-		    Array.Copy(tempBuffer, 2, buf, 0, tempBuffer.Length-4);
+		    Array.Copy(tempBuffer, 4, buf, 0, tempBuffer.Length - 4);
 		    return recvSize;
         }
 	}
