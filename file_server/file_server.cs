@@ -31,32 +31,30 @@ namespace Application
 		    {
 		        try
 		        {
-		            var receiveSize = transport.receive(ref receiveBuffer);
+		            var receiveSize = 0;
 		            int index = 0;
 		            do
 		            {
-                        Array.Resize(ref receivedData, receiveSize);
-                        Array.Copy(receiveBuffer, 0, receivedData, index, receiveSize);
 		                receiveSize = transport.receive(ref receiveBuffer);
+		                Array.Resize(ref receivedData, receiveSize);
+		                Array.Copy(receiveBuffer, 0, receivedData, index, receiveSize);
 		                index += receiveSize;
-		            } while (receiveSize == BUFSIZE);
-		            if (receiveSize > 0)
-		            {
-                        Array.Resize(ref receivedData, receivedData.Length+receiveSize);
-		                Array.Copy(receiveBuffer, 0, receivedData, index, receiveBuffer.Length);
-                    }
 
-		            var requestedFile = LIB.extractFileName(receivedData.ToString());
+		            } while (receiveSize == BUFSIZE);
+
+		            string receivedFilePath = Encoding.UTF8.GetString(receivedData);
+
+		            var requestedFile = LIB.extractFileName(Encoding.UTF8.GetString(receivedData));
 		            Console.WriteLine("Extracted " + requestedFile + "from client.");
 
 		            //til filer på vilkårlige placeringer
-		            var fileLength = LIB.check_File_Exists(receivedData.ToString());
+		            var fileLength = LIB.check_File_Exists(receivedFilePath);
 
 		            if (fileLength > 0) //tjekker om filen findes på den givne sti
 		            {
 		                Console.WriteLine($"Fuld sti:{receivedData}" +
 		                                  $"\nstørrelse:{fileLength}");
-		                sendFile(receivedData.ToString(), fileLength, transport);
+		                sendFile(receivedFilePath, fileLength, transport);
 		            }
 		            else
 		            {
@@ -64,7 +62,7 @@ namespace Application
 		                zeroArray[0] = 0;
 		                transport.send(zeroArray, zeroArray.Length);
 		            }
-		        }
+                }
 		        catch (Exception e)
 		        {
 		            Debug.WriteLine(e);
