@@ -116,16 +116,16 @@ namespace Transportlaget
 		/// </param>
 		public void send(byte[] buf, int size)
 		{
-		    var sendBuf = new byte[1004];
-		    sendBuf[0] = seqNo;
-            sendBuf[1] = (byte)TransType.DATA;
-            Array.Copy(buf, 0, sendBuf, 2, buf.Length);
-            checksum.calcChecksum(ref sendBuf, sendBuf.Length);
-            do
-            {
-                link.send(sendBuf, sendBuf.Length);
-            } while (!receiveAck());
-		}
+		    var sendBuf = new byte[size + 4];
+		    sendBuf[(int)TransCHKSUM.SEQNO] = seqNo;
+		    sendBuf[(int)TransCHKSUM.TYPE] = (byte)TransType.DATA;
+		    Array.Copy(buf, 0, sendBuf, 4, buf.Length);
+		    checksum.calcChecksum(ref sendBuf, sendBuf.Length);
+		    do
+		    {
+		        link.send(sendBuf, sendBuf.Length);
+		    } while (!receiveAck());
+        }
 
 		/// <summary>
 		/// Receive the specified buffer.
