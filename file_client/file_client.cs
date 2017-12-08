@@ -44,35 +44,39 @@ namespace Application
 		/// </param>
 		private void receiveFile (String fileName, Transport transport)
 		{
-		    var receiveBuffer = new byte[1000];
+		    var receiveBuffer = new byte[BUFSIZE];
 		    var receivedData = new byte[] { };
-            var fileNameArray = Encoding.UTF8.GetBytes(fileName);
-            transport.send(fileNameArray, fileNameArray.Length);
-		    var filePath = AppDomain.CurrentDomain.BaseDirectory + "/" + fileName;
+		    var fileNameArray = Encoding.UTF8.GetBytes(fileName);
+		    transport.send(fileNameArray, fileNameArray.Length);
+		    var filePath = AppDomain.CurrentDomain.BaseDirectory + "/" + LIB.extractFileName(fileName);
 
-            var existCheck = new byte[]{};
+		    //var existCheck = new byte[]{};
+		    var existCheck = new byte[BUFSIZE];
+
 		    transport.receive(ref existCheck);
 		    if (existCheck[0] != 0)
 		    {
-		        var receiveSize = transport.receive(ref receiveBuffer);
+		        var receiveSize = 0;//transport.receive(ref receiveBuffer);
 		        int index = 0;
 		        do
 		        {
-		            Array.Copy(receiveBuffer, 0, receivedData, index, BUFSIZE);
 		            receiveSize = transport.receive(ref receiveBuffer);
-		            index += 1000;
+		            Array.Resize(ref receivedData, index + receiveSize);
+		            Array.Copy(receiveBuffer, 0, receivedData, index, receiveSize);
+
+		            index += receiveSize;
 		        } while (receiveSize == BUFSIZE);
-		        if (receiveSize > 0)
-		        {
-		            Array.Copy(receiveBuffer, 0, receivedData, index, receiveBuffer.Length);
-		        }
+		        /*if (receiveSize > 0)
+                {
+                    Array.Copy(receiveBuffer, 0, receivedData, index, receiveBuffer.Length);
+                }*/
 		        if (File.Exists(filePath))
 		        {
 		            File.Delete(filePath);
 		        }
 		        File.WriteAllBytes(filePath, receivedData);
 		    }
-		}
+        }
 
         /// <summary>
         /// The entry point of the program, where the program control starts and ends.
