@@ -71,11 +71,13 @@ namespace Application
 
 		            index += receiveSize;
 		        } while (receiveSize == BUFSIZE);
+
                 Console.WriteLine($"File received");
 		        if (File.Exists(filePath))
 		        {
                     File.Delete(filePath);
 		        }
+
 		        File.WriteAllBytes(filePath, receivedData);
                 Console.WriteLine($"File created");
 		    }
