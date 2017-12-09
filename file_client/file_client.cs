@@ -47,6 +47,8 @@ namespace Application
 		    var receiveBuffer = new byte[BUFSIZE];
 		    var receivedData = new byte[] { };
 		    var fileNameArray = Encoding.UTF8.GetBytes(fileName);
+            Console.WriteLine($"Sender anmodning om fil på:" +
+                              $"\n{fileName}");
 		    transport.send(fileNameArray, fileNameArray.Length);
 		    var filePath = AppDomain.CurrentDomain.BaseDirectory + "/" + LIB.extractFileName(fileName);
 
@@ -56,6 +58,8 @@ namespace Application
 		    transport.receive(ref existCheck);
 		    if (existCheck[0] != 0)
 		    {
+                Console.WriteLine($"Fil eksisterer på serveren." +
+                                  $"\n Start receiving file");
 		        var receiveSize = 0;//transport.receive(ref receiveBuffer);
 		        int index = 0;
 		        do
@@ -70,11 +74,17 @@ namespace Application
                 {
                     Array.Copy(receiveBuffer, 0, receivedData, index, receiveBuffer.Length);
                 }*/
+                Console.WriteLine($"File received");
 		        if (File.Exists(filePath))
 		        {
 		            File.Delete(filePath);
 		        }
 		        File.WriteAllBytes(filePath, receivedData);
+                Console.WriteLine($"File created");
+		    }
+		    else
+		    {
+		        Console.WriteLine($"Fil ikke fundet på server");
 		    }
         }
 

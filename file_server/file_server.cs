@@ -33,6 +33,9 @@ namespace Application
 		        {
 		            var receiveSize = 0;
 		            int index = 0;
+
+                    Console.WriteLine("Awaiting new file request");
+
 		            do
 		            {
 		                receiveSize = transport.receive(ref receiveBuffer);
@@ -52,14 +55,15 @@ namespace Application
 
 		            if (fileLength > 0) //tjekker om filen findes på den givne sti
 		            {
-		                Console.WriteLine($"Fuld sti:{receivedData}" +
+		                Console.WriteLine($"Fuld sti:{receivedFilePath}" +
 		                                  $"\nstørrelse:{fileLength}");
 		                sendFile(receivedFilePath, fileLength, transport);
 		            }
 		            else
 		            {
-		                var zeroArray = new byte[] { };
-		                zeroArray[0] = 0;
+                        Console.WriteLine($"Fuld sti:{receivedFilePath}" +
+                                          $"\nFil ikke fundet.");
+		                var zeroArray = new byte[] { 0 };
 		                transport.send(zeroArray, zeroArray.Length);
 		            }
                 }
@@ -94,7 +98,8 @@ namespace Application
 		    {
 		        transport.send(bytes.ToArray(), bytes.Count);
 		    }
-        }
+		    Console.WriteLine($"Fil sendt");
+		}
 
 	    private static List<List<byte>> splitList(List<byte> byteList, int nSize = 1000)
 	    {
