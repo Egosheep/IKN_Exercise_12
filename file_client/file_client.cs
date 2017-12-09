@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using Transportlaget;
@@ -70,14 +71,10 @@ namespace Application
 
 		            index += receiveSize;
 		        } while (receiveSize == BUFSIZE);
-		        /*if (receiveSize > 0)
-                {
-                    Array.Copy(receiveBuffer, 0, receivedData, index, receiveBuffer.Length);
-                }*/
                 Console.WriteLine($"File received");
 		        if (File.Exists(filePath))
 		        {
-		            File.Delete(filePath);
+                    File.Delete(filePath);
 		        }
 		        File.WriteAllBytes(filePath, receivedData);
                 Console.WriteLine($"File created");
