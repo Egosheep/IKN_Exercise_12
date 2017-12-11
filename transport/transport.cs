@@ -146,7 +146,8 @@ namespace Transportlaget
 	            }
 
 	        } while (!receiveAckBool);
-        }
+	        old_seqNo = DEFAULT_SEQNO;
+	    }
 
         /// <summary>
         /// Receive the specified buffer.
