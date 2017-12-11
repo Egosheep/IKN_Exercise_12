@@ -98,7 +98,11 @@ namespace Application
 		    {
 		        transport.send(bytes.ToArray(), bytes.Count);
 		    }
-		    Console.WriteLine($"Fil sendt");
+		    if (splitFileByteList[splitFileByteList.Count - 1].Count == BUFSIZE) //if last list == buffsize, send empty message to signify end of transmission
+		    {
+		        transport.send(new byte[0], 0);
+		    }
+            Console.WriteLine($"Fil sendt");
 		}
 
 	    private static List<List<byte>> splitList(List<byte> byteList, int nSize = 1000)

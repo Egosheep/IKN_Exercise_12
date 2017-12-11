@@ -105,53 +105,66 @@ namespace Transportlaget
 			link.send(ackBuf, (int)TransSize.ACKSIZE);
 		}
 
-		/// <summary>
-		/// Send the specified buffer and size.
-		/// </summary>
-		/// <param name='buffer'>
-		/// Buffer.
-		/// </param>
-		/// <param name='size'>
-		/// Size.
-		/// </param>
-		public void send(byte[] buf, int size)
-		{
-		    var sendBuf = new byte[size + 4];
-		    sendBuf[(int)TransCHKSUM.SEQNO] = seqNo;
-		    sendBuf[(int)TransCHKSUM.TYPE] = (byte)TransType.DATA;
-		    Array.Copy(buf, 0, sendBuf, 4, buf.Length);
-		    checksum.calcChecksum(ref sendBuf, sendBuf.Length);
-		    do
-		    {
-		        link.send(sendBuf, sendBuf.Length);
-		    } while (!receiveAck());
-        }
+	    /// <summary>
+	    /// Send the specified buffer and size.
+	    /// </summary>
+	    /// <param name='buffer'>
+	    /// Buffer.
+	    /// </param>
+	    /// <param name='size'>
+	    /// Size.
+	    /// </param>
+	    public void send(byte[] buf, int size)
+	    {
+	        var sendBuf = new byte[size + 4];
+	        sendBuf[(int)TransCHKSUM.SEQNO] = seqNo;
+	        sendBuf[(int)TransCHKSUM.TYPE] = (byte)TransType.DATA;
+	        Array.Copy(buf, 0, sendBuf, 4, buf.Length);
+	        checksum.calcChecksum(ref sendBuf, sendBuf.Length);
 
-		/// <summary>
-		/// Receive the specified buffer.
-		/// </summary>
-		/// <param name='buffer'>
-		/// Buffer.
-		/// </param>
-		public int receive (ref byte[] buf)
-		{
-            Array.Clear(buffer, 0, buffer.Length); //clear buffer
+	        bool receiveAckBool;
+	        errorCount = 0;
+	        do
+	        {
+	            link.send(sendBuf, sendBuf.Length);
+	            receiveAckBool = receiveAck();
+	            if (!receiveAckBool)
+	            {
+	                errorCount++;
+	                if (errorCount > 5)
+	                {
+	                    throw new System.Exception("SendTimeOutException");
+	                }
+	            }
 
-            recvSize = link.receive(ref buffer) - 4;
-            while (!checksum.checkChecksum(buffer, buffer.Length))
-            {
-                errorCount++;
-                sendAck(false);
-                Array.Clear(buffer, 0, buffer.Length); //clear buffer
-                recvSize = link.receive(ref buffer) - 4;
-                if (errorCount > 5)
-                {
-                    return 0;
-                }
-            }
-            sendAck(true);
-            Array.Copy(buffer, 4, buf, 0, buffer.Length - 4);
-            return recvSize;
-        }
-	}
+	        } while (!receiveAckBool);
+	    }
+
+	    /// <summary>
+	    /// Receive the specified buffer.
+	    /// </summary>
+	    /// <param name='buffer'>
+	    /// Buffer.
+	    /// </param>
+	    public int receive(ref byte[] buf)
+	    {
+	        Array.Clear(buffer, 0, buffer.Length); //clear buffer
+	        errorCount = 0;
+
+	        recvSize = link.receive(ref buffer) - 4;
+	        while (!checksum.checkChecksum(buffer, buffer.Length))
+	        {
+	            errorCount++;
+	            sendAck(false);
+	            recvSize = link.receive(ref buffer);
+	            if (errorCount > 5)
+	            {
+	                throw new System.Exception("ReceiveTimeOutException");
+	            }
+	        }
+	        sendAck(true);
+	        Array.Copy(buffer, 4, buf, 0, buffer.Length - 4);
+	        return recvSize;
+	    }
+    }
 }
