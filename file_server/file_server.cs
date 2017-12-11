@@ -24,55 +24,55 @@ namespace Application
 		private file_server ()
 		{
             var transport = new Transport(BUFSIZE, APP);
-		    var receiveBuffer = new byte[BUFSIZE];
-		    var receivedData = new byte[]{};
+            var receiveBuffer = new byte[BUFSIZE];
+            var receivedData = new byte[] { };
 
-		    while (true)
-		    {
-		        try
-		        {
-		            var receiveSize = 0;
-		            int index = 0;
+            while (true)
+            {
+                try
+                {
+                    var receiveSize = 0;
+                    int index = 0;
 
                     Console.WriteLine("Awaiting new file request");
 
-		            do
-		            {
-		                receiveSize = transport.receive(ref receiveBuffer);
-		                Array.Resize(ref receivedData, receiveSize);
-		                Array.Copy(receiveBuffer, 0, receivedData, index, receiveSize);
-		                index += receiveSize;
+                    do
+                    {
+                        receiveSize = transport.receive(ref receiveBuffer);
+                        Array.Resize(ref receivedData, receiveSize);
+                        Array.Copy(receiveBuffer, 0, receivedData, index, receiveSize);
+                        index += receiveSize;
 
-		            } while (receiveSize == BUFSIZE);
+                    } while (receiveSize == BUFSIZE);
 
-		            string receivedFilePath = Encoding.UTF8.GetString(receivedData);
+                    string receivedFilePath = Encoding.UTF8.GetString(receivedData);
 
-		            var requestedFile = LIB.extractFileName(Encoding.UTF8.GetString(receivedData));
-		            Console.WriteLine("Extracted " + requestedFile + "from client.");
+                    var requestedFile = LIB.extractFileName(Encoding.UTF8.GetString(receivedData));
+                    Console.WriteLine("Extracted " + requestedFile + "from client.");
 
-		            //til filer på vilkårlige placeringer
-		            var fileLength = LIB.check_File_Exists(receivedFilePath);
+                    //til filer på vilkårlige placeringer
+                    var fileLength = LIB.check_File_Exists(receivedFilePath);
 
-		            if (fileLength > 0) //tjekker om filen findes på den givne sti
-		            {
-		                Console.WriteLine($"Fuld sti:{receivedFilePath}" +
-		                                  $"\nstørrelse:{fileLength}");
-		                sendFile(receivedFilePath, fileLength, transport);
-		            }
-		            else
-		            {
+                    if (fileLength > 0) //tjekker om filen findes på den givne sti
+                    {
+                        Console.WriteLine($"Fuld sti:{receivedFilePath}" +
+                                          $"\nstørrelse:{fileLength}");
+                        sendFile(receivedFilePath, fileLength, transport);
+                    }
+                    else
+                    {
                         Console.WriteLine($"Fuld sti:{receivedFilePath}" +
                                           $"\nFil ikke fundet.");
-		                var zeroArray = new byte[] { 0 };
-		                transport.send(zeroArray, zeroArray.Length);
-		            }
+                        byte[] sizeArray = Encoding.UTF8.GetBytes(fileLength.ToString());
+                        transport.send(sizeArray, sizeArray.Length);
+                    }
                 }
-		        catch (Exception e)
-		        {
-		            Debug.WriteLine(e);
-		            throw;
-		        }
-		    }
+                catch (Exception e)
+                {
+                    Debug.WriteLine(e);
+                    throw;
+                }
+            }
         }
 
 		/// <summary>
