@@ -98,7 +98,7 @@ namespace Application
 		    {
 		        transport.send(bytes.ToArray(), bytes.Count);
 		    }
-		    if (splitFileByteList[splitFileByteList.Count - 1].Count == BUFSIZE) //if last list == buffsize, send empty message to signify end of transmission
+		    if (splitFileByteList[splitFileByteList.Count - 1].Count == BUFSIZE) //if last list == buffsize, send empty message to signify end of transmissions
 		    {
 		        transport.send(new byte[0], 0);
 		    }
