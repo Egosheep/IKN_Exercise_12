@@ -140,31 +140,50 @@ namespace Transportlaget
 	        } while (!receiveAckBool);
 	    }
 
-	    /// <summary>
-	    /// Receive the specified buffer.
-	    /// </summary>
-	    /// <param name='buffer'>
-	    /// Buffer.
-	    /// </param>
-	    public int receive(ref byte[] buf)
-	    {
-	        Array.Clear(buffer, 0, buffer.Length); //clear buffer
-	        errorCount = 0;
+        /// <summary>
+        /// Receive the specified buffer.
+        /// </summary>
+        /// <param name='buffer'>
+        /// Buffer.
+        /// </param>
+        public int receive(ref byte[] buf)
+        {
+            Array.Clear(buffer, 0, buffer.Length); //clear buffer
 
-	        recvSize = link.receive(ref buffer) - 4;
-	        while (!checksum.checkChecksum(buffer, buffer.Length))
-	        {
-	            errorCount++;
-	            sendAck(false);
-	            recvSize = link.receive(ref buffer);
-	            if (errorCount > 5)
-	            {
-	                throw new System.Exception("ReceiveTimeOutException");
-	            }
-	        }
-	        sendAck(true);
-	        Array.Copy(buffer, 4, buf, 0, buffer.Length - 4);
-	        return recvSize;
-	    }
+            recvSize = link.receive(ref buffer) - 4;
+
+            while (buffer[(int)TransCHKSUM.SEQNO] == old_seqNo) //checks if the received package is the same as the previous
+            {
+                sendAck(true); //resends an ack, as the package has the same seqNo as prev package
+                Array.Clear(buffer, 0, buffer.Length); //clear buffer
+                recvSize = link.receive(ref buffer) - 4;
+            }
+            old_seqNo = buffer[(int)TransCHKSUM.SEQNO]; //update old seqno to newest one
+
+            /*
+			if(++errorCount == 3) // Simulate noise, uncomment to test noise
+			{
+				buffer[1]++; // Important: Only spoil a checksum-field (buffer[0] or buffer[1])
+				Console.WriteLine($"Noise! - byte #1 is spoiled in the third transmission");
+				errorCount = 0; //keep sending errors
+			}*/
+
+            var recErrors = 0;
+            while (!checksum.checkChecksum(buffer, buffer.Length))
+            {
+                recErrors++;
+                sendAck(false);
+                Array.Clear(buffer, 0, buffer.Length); //clear buffer
+                recvSize = link.receive(ref buffer) - 4;
+                if (recErrors > 5)
+                {
+                    throw new System.Exception("ReceiveTimeOutException");
+                }
+            }
+
+            sendAck(true);
+            Array.Copy(buffer, 4, buf, 0, buffer.Length - 4);
+            return recvSize;
+        }
     }
 }
