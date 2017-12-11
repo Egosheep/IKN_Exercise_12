@@ -116,29 +116,29 @@ namespace Transportlaget
 	    /// </param>
 	    public void send(byte[] buf, int size)
 	    {
-	        var sendBuf = new byte[size + 4];
+            var sendBuf = new byte[size + 4];
 	        sendBuf[(int)TransCHKSUM.SEQNO] = seqNo;
 	        sendBuf[(int)TransCHKSUM.TYPE] = (byte)TransType.DATA;
 	        Array.Copy(buf, 0, sendBuf, 4, buf.Length);
 	        checksum.calcChecksum(ref sendBuf, sendBuf.Length);
 
 	        bool receiveAckBool;
-	        errorCount = 0;
+	        var sendErrors = 0;
 	        do
 	        {
 	            link.send(sendBuf, sendBuf.Length);
 	            receiveAckBool = receiveAck();
 	            if (!receiveAckBool)
 	            {
-	                errorCount++;
-	                if (errorCount > 5)
+	                sendErrors++;
+	                if (sendErrors > 5)
 	                {
 	                    throw new System.Exception("SendTimeOutException");
 	                }
 	            }
 
 	        } while (!receiveAckBool);
-	    }
+        }
 
         /// <summary>
         /// Receive the specified buffer.
