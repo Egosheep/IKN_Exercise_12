@@ -45,23 +45,23 @@ namespace Application
 		/// </param>
 		private void receiveFile (String fileName, Transport transport)
 		{
-		    var receiveBuffer = new byte[BUFSIZE];
-		    var receivedData = new byte[] { };
 		    var fileNameArray = Encoding.UTF8.GetBytes(fileName);
-            Console.WriteLine($"Sender anmodning om fil på:" +
-                              $"\n{fileName}");
+		    Console.WriteLine($"Sender anmodning om fil på:" +
+		                      $"\n{fileName}");
 		    transport.send(fileNameArray, fileNameArray.Length);
 		    var filePath = AppDomain.CurrentDomain.BaseDirectory + "/" + LIB.extractFileName(fileName);
 
-		    //var existCheck = new byte[]{};
 		    var existCheck = new byte[BUFSIZE];
-
 		    transport.receive(ref existCheck);
-		    if (existCheck[0] != 0)
+		    var fileSize = long.Parse(Encoding.UTF8.GetString(existCheck));
+		    if (fileSize > 0)
 		    {
-                Console.WriteLine($"Fil eksisterer på serveren." +
-                                  $"\n Start receiving file");
-		        var receiveSize = 0;//transport.receive(ref receiveBuffer);
+		        Console.WriteLine($"Fil eksisterer på serveren." +
+		                          $"\nStart receiving file of size: {fileSize} bytes");
+
+		        var receiveBuffer = new byte[BUFSIZE];
+		        var receivedData = new byte[] { };
+		        var receiveSize = 0;
 		        int index = 0;
 		        do
 		        {
@@ -70,16 +70,16 @@ namespace Application
 		            Array.Copy(receiveBuffer, 0, receivedData, index, receiveSize);
 
 		            index += receiveSize;
-		        } while (receiveSize == BUFSIZE);
+		        } while (receivedData.Length != fileSize); //Keeps looping until the desired filesize is reached
 
-                Console.WriteLine($"File received");
+		        Console.WriteLine($"File received");
 		        if (File.Exists(filePath))
 		        {
-                    File.Delete(filePath);
+		            File.Delete(filePath);
 		        }
 
 		        File.WriteAllBytes(filePath, receivedData);
-                Console.WriteLine($"File created");
+		        Console.WriteLine($"File created");
 		    }
 		    else
 		    {

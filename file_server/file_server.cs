@@ -104,7 +104,7 @@ namespace Application
 		    }
             Console.WriteLine($"Fil sendt");
 		}
-
+         
 	    private static List<List<byte>> splitList(List<byte> byteList, int nSize = 1000)
 	    {
 	        var list = new List<List<byte>>();
