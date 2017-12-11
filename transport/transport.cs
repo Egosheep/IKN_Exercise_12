@@ -102,7 +102,15 @@ namespace Transportlaget
 				(ackType ? (byte)buffer [(int)TransCHKSUM.SEQNO] : (byte)(buffer [(int)TransCHKSUM.SEQNO] + 1) % 2);
 			ackBuf [(int)TransCHKSUM.TYPE] = (byte)(int)TransType.ACK;
 			checksum.calcChecksum (ref ackBuf, (int)TransSize.ACKSIZE);
-			link.send(ackBuf, (int)TransSize.ACKSIZE);
+		    /*
+            if(++errorCount == 3) // Simulate noise
+            {
+                ackBuf[1]++; // Important: Only spoil a checksum-field (ackBuf[0] or ackBuf[1])
+                Console.WriteLine("Noise! byte #1 is spoiled in the third transmitted ACK-package");
+                errorCount = 0;
+            }
+            */
+            link.send(ackBuf, (int)TransSize.ACKSIZE);
 		}
 
 	    /// <summary>
