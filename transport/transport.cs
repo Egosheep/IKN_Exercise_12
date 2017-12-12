@@ -172,13 +172,13 @@ namespace Transportlaget
                 while (!checksum.checkChecksum(buffer, buffer.Length))
                 {
                     recErrors++;
-                    sendAck(false);
-                    Array.Clear(buffer, 0, buffer.Length); //clear buffer
-                    recvSize = link.receive(ref buffer) - 4;
                     if (recErrors > 5) //after 5 retries, give up
                     {
                         throw new System.Exception("ReceiveTimeOutException");
                     }
+                    sendAck(false);
+                    Array.Clear(buffer, 0, buffer.Length); //clear buffer
+                    recvSize = link.receive(ref buffer) - 4;
                 }
 
                 if (buffer[(int)TransCHKSUM.SEQNO] == old_seqNo) 
